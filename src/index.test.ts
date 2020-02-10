@@ -1,10 +1,10 @@
-import { lazyProxy } from './index';
+import { lazy } from './index';
 
-describe('lazyProxy', () => {
+describe('lazy', () => {
   const creator = jest.fn().mockReturnValue({
     three: 3,
   });
-  const subject = lazyProxy(creator);
+  const subject = lazy(creator);
 
   beforeEach(() => {
     creator.mockClear();
@@ -31,6 +31,19 @@ describe('lazyProxy', () => {
       subject.three;
       subject.three;
       expect(creator).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('when it relies on another lazy value', () => {
+    const inner = lazy(() => ({
+      isInner: true,
+    }));
+    const outer = lazy(() => ({
+      inner: inner(),
+    }));
+
+    it('resolves all', () => {
+      expect(outer()).toEqual({ inner: { isInner: true } });
     });
   });
 });

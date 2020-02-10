@@ -1,4 +1,4 @@
-export function lazyProxy<T>(creator: () => T): T & (() => T) {
+export function lazy<T>(creator: () => T): T & (() => T) {
   let current: T | undefined;
 
   beforeEach(() => {
