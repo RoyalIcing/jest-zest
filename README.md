@@ -3,22 +3,49 @@
 Shorter and more readable tests in jest.
 
 ```tsx
-const kind = vary('');
-const subject = lazy(() => render(<Component kind={kind()} />));
+import { render, fireEvent } from '@testing-library/react';
 
-describe('when kind is orange', () => {
-  kind('orange');
+const userKind = vary('normal');
+const [onAddComment, onEditPost] = fresh(jest.fn, mock => mock.mockClear());
+const subject = lazy(() =>
+  render(
+    <Page
+      userKind={userKind()}
+      onAddComment={onAddComment}
+      onEditPost={onEditPost}
+    />
+  )
+);
 
-  it('shows text orange', () => {
-    expect(subject.getByText('orange')).toBeInTheDocument();
+it('shows add comment button', () => {
+  expect(subject.getByText('Add comment')).toBeInTheDocument();
+});
+
+describe('when add comment is clicked', () => {
+  beforeEach(() => {
+    fireEvent.click(subject.getByText('Add comment'));
+  });
+
+  it('calls onAddComment', () => {
+    expect(onAddComment).toHaveBeenCalledTimes(1);
   });
 });
 
-describe('when kind is blue', () => {
-  kind('blue');
+describe('when user is admin', () => {
+  userKind('admin');
 
-  it('shows text blue', () => {
-    expect(subject.getByText('blue')).toBeInTheDocument();
+  it('shows edit post button', () => {
+    expect(subject.getByText('Edit post')).toBeInTheDocument();
+  });
+
+  describe('when edit post is clicked', () => {
+    beforeEach(() => {
+      fireEvent.click(subject.getByText('Edit post'));
+    });
+
+    it('calls onEditPost', () => {
+      expect(onEditPost).toHaveBeenCalledTimes(1);
+    });
   });
 });
 ```
