@@ -4,10 +4,20 @@ describe('lazy', () => {
   const creator = jest.fn().mockReturnValue({
     three: 3,
   });
+  const cleanupCallback = jest.fn();
   beforeEach(() => {
     creator.mockClear();
+    cleanupCallback.mockClear();
   });
-  const subject = lazy(creator);
+  const subject = lazy(creator, cleanupCallback);
+
+  it('has not called cleanup callback', () => {
+    expect(cleanupCallback).toHaveBeenCalledTimes(0);
+  });
+
+  afterAll(() => {
+    expect(cleanupCallback).toHaveBeenCalledTimes(1);
+  });
 
   describe('when called as function', () => {
     it('returns value of creator', () => {
@@ -103,11 +113,11 @@ describe('fresh()', () => {
     });
   });
 
-  describe("when calling result", () => {
+  describe('when calling result', () => {
     const result = objects();
 
-    it("is mock", () => {
+    it('is mock', () => {
       expect(jest.isMockFunction(result)).toBe(true);
-    })
-  })
+    });
+  });
 });

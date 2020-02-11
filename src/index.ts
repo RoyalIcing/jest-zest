@@ -1,7 +1,11 @@
-export function lazy<T>(creator: () => T): T & (() => T) {
+export function lazy<T>(
+  creator: () => T,
+  cleanup?: (object: T) => void
+): T & (() => T) {
   let current: T | undefined;
 
   afterEach(() => {
+    cleanup ? cleanup(current!) : undefined;
     current = undefined;
   });
 
