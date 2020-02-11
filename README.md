@@ -21,6 +21,10 @@ it('shows add comment button', () => {
   expect(subject.getByText('Add comment')).toBeInTheDocument();
 });
 
+it('hides edit post button', () => {
+  expect(subject.queryByText('Edit post')).toBeNull();
+});
+
 describe('when add comment is clicked', () => {
   beforeEach(() => {
     fireEvent.click(subject.getByText('Add comment'));
@@ -133,6 +137,60 @@ describe('when content is added', () => {
 });
 ```
 
+### `fresh()`
+
+Before:
+
+```ts
+const onChange = jest.fn();
+const onFocus = jest.fn();
+const onBlur = jest.fn();
+
+beforeEach(() => {
+  onChange.mockClear();
+  onFocus.mockClear();
+  onBlur.mockClear();
+});
+```
+
+After:
+
+```ts
+const [onChange, onFocus, onBlur] = fresh(jest.fn, mock => mock.mockClear());
+```
+
+Before:
+
+```ts
+const onChange = jest.fn();
+const onFocus = jest.fn();
+const onBlur = jest.fn();
+
+beforeEach(() => {
+  onChange.mockClear();
+  onFocus.mockClear();
+  onBlur.mockClear();
+});
+
+const props = {
+  onChange,
+  onFocus,
+  onBlur,
+};
+```
+
+After:
+
+```ts
+const freshFn = fresh(jest.fn, mock => mock.mockClear());
+
+const props = {
+  onChange: freshFn(),
+  onFocus: freshFn(),
+  onBlur: freshFn(),
+};
+```
+
 ### `vary()`
 
 Before:
@@ -186,60 +244,6 @@ describe('when variation is blue', () => {
     expect(subject.getByText('blue')).toBeInTheDocument();
   });
 });
-```
-
-### `fresh()`
-
-Before:
-
-```ts
-const onChange = jest.fn();
-const onFocus = jest.fn();
-const onBlur = jest.fn();
-
-beforeEach(() => {
-  onChange.mockClear();
-  onFocus.mockClear();
-  onBlur.mockClear();
-});
-```
-
-After:
-
-```ts
-const [onChange, onFocus, onBlur] = fresh(jest.fn, mock => mock.mockClear());
-```
-
-Before:
-
-```ts
-const onChange = jest.fn();
-const onFocus = jest.fn();
-const onBlur = jest.fn();
-
-beforeEach(() => {
-  onChange.mockClear();
-  onFocus.mockClear();
-  onBlur.mockClear();
-});
-
-const props = {
-  onChange,
-  onFocus,
-  onBlur,
-};
-```
-
-After:
-
-```ts
-const freshFn = fresh(jest.fn, mock => mock.mockClear());
-
-const props = {
-  onChange: freshFn(),
-  onFocus: freshFn(),
-  onBlur: freshFn(),
-};
 ```
 
 ---
