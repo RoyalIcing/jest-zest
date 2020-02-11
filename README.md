@@ -56,7 +56,7 @@ describe('when user is admin', () => {
 
 ## Documentation
 
-### `lazy(creator: () => T)`
+### `lazy(creator: () => T, cleanup?: (object?: T) => void)`
 
 Pass a creator function that will be lazily called once. Cleared for each test using `afterEach()`.
 
