@@ -1,7 +1,7 @@
 export function lazy<T>(creator: () => T): T & (() => T) {
   let current: T | undefined;
 
-  beforeEach(() => {
+  afterEach(() => {
     current = undefined;
   });
 

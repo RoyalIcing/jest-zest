@@ -58,6 +58,8 @@ describe('when user is admin', () => {
 
 ### `lazy()`
 
+Pass a creator function that will be lazily called once. Cleared for each test using `afterEach()`.
+
 Before:
 
 ```tsx
