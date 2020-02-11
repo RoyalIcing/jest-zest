@@ -54,7 +54,7 @@ describe('when user is admin', () => {
 });
 ```
 
-## Docs
+## Documentation
 
 ### `lazy()`
 
