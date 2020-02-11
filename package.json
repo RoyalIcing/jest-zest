@@ -25,9 +25,9 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "chicot",
+  "name": "jest-zest",
   "author": "Patrick Smith",
-  "module": "dist/chicot.esm.js",
+  "module": "dist/jest-zest.esm.js",
   "devDependencies": {
     "@types/jest": "^25.1.2",
     "husky": "^4.2.1",
