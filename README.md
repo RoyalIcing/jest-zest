@@ -1,6 +1,6 @@
 # jest-zest
 
-Shorter and more readable tests in jest.
+Shorter and more readable tests in jest. Combines TypeScript and `Proxy`.
 
 ```tsx
 import { render, fireEvent } from '@testing-library/react';
@@ -56,7 +56,7 @@ describe('when user is admin', () => {
 
 ## Documentation
 
-### `lazy()`
+### `lazy(creator: () => T)`
 
 Pass a creator function that will be lazily called once. Cleared for each test using `afterEach()`.
 
@@ -139,13 +139,18 @@ describe('when content is added', () => {
 });
 ```
 
-### `fresh()`
+### `fresh(creator: () => T, refresher: (object: T) => void)`
 
-Create multiple of something that must be cleared for each test.
+Create multiple of something that must be cleared for each test. Great for spies like `jest.fn()`.
 
 It accepts two arguments:
 1. Pass a function that will be called initially to create your object
 2. A function that clears the object using `afterEach()`
+
+To then create an instance, either:
+
+- call it to create a single instance
+- destructure it like an array to create multiple instances
 
 Before:
 
@@ -201,6 +206,8 @@ const props = {
 
 ### `vary()`
 
+Define and redefine a value easily.
+
 Before:
 
 ```tsx
@@ -238,7 +245,7 @@ const kind = vary('');
 const subject = lazy(() => render(<Component kind={kind()} />));
 
 describe('when variation is orange', () => {
-  kind('orange');
+  new kind('orange');
 
   it('shows text orange', () => {
     expect(subject.getByText('orange')).toBeInTheDocument();
@@ -246,7 +253,7 @@ describe('when variation is orange', () => {
 });
 
 describe('when variation is blue', () => {
-  kind('blue');
+  new kind('blue');
 
   it('shows text blue', () => {
     expect(subject.getByText('blue')).toBeInTheDocument();
