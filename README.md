@@ -141,6 +141,12 @@ describe('when content is added', () => {
 
 ### `fresh()`
 
+Create multiple of something that must be cleared for each test.
+
+It accepts two arguments:
+1. Pass a function that will be called initially to create your object
+2. A function that clears the object using `afterEach()`
+
 Before:
 
 ```ts
@@ -148,7 +154,7 @@ const onChange = jest.fn();
 const onFocus = jest.fn();
 const onBlur = jest.fn();
 
-beforeEach(() => {
+afterEach(() => {
   onChange.mockClear();
   onFocus.mockClear();
   onBlur.mockClear();
@@ -168,7 +174,7 @@ const onChange = jest.fn();
 const onFocus = jest.fn();
 const onBlur = jest.fn();
 
-beforeEach(() => {
+afterEach(() => {
   onChange.mockClear();
   onFocus.mockClear();
   onBlur.mockClear();

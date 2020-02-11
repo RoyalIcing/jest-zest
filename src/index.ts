@@ -67,7 +67,7 @@ export function fresh<T>(
         const index = parseInt(prop, 10);
         if (index.toString() === prop) {
           const object = creator();
-          beforeEach(() => {
+          afterEach(() => {
             refresher(object);
           });
           return object;
@@ -78,7 +78,7 @@ export function fresh<T>(
     },
     apply() {
       const object = creator();
-      beforeEach(() => {
+      afterEach(() => {
         refresher(object);
       });
       return object;
