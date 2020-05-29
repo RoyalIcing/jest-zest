@@ -10,23 +10,31 @@ export function lazy<T>(
   });
 
   return new Proxy(() => {}, {
-    get(_obj: {}, prop: keyof T) {
-      if (prop === 'calls') {
-        return;
-      }
-
-      if (!current) {
-        current = creator();
-      }
-
-      return current[prop];
-    },
     apply() {
       if (!current) {
         current = creator();
       }
 
       return current;
+    },
+    get(_obj: {}, prop: keyof T) {
+      if (prop === 'calls') {
+        return;
+      }
+
+      return new Proxy(() => {}, {
+        apply(_target, _thisArg, argumentsList) {
+          if (!current) {
+            current = creator();
+          }
+    
+          const method = current[prop]
+          if (method instanceof Function) {
+            return method.apply(current, argumentsList);
+          }
+        }
+      });
+
     },
   }) as T & (() => T);
 }

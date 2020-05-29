@@ -1,9 +1,13 @@
 import { lazy, vary, fresh } from './index';
 
 describe('lazy', () => {
-  const creator = jest.fn().mockReturnValue({
+  const implementation = {
     three: 3,
-  });
+    methodReturning3times5() {
+      return 5 * this.three
+    }
+  }
+  const creator = jest.fn().mockReturnValue(implementation);
   const cleanupCallback = jest.fn();
   beforeEach(() => {
     creator.mockClear();
@@ -21,7 +25,7 @@ describe('lazy', () => {
 
   describe('when called as function', () => {
     it('returns value of creator', () => {
-      expect(subject()).toEqual({ three: 3 });
+      expect(subject()).toBe(implementation);
     });
 
     it('calls the creator function only once', () => {
@@ -33,14 +37,41 @@ describe('lazy', () => {
 
   describe('when getting a property', () => {
     it('returns value of same property from creator', () => {
-      expect(subject.three).toEqual(3);
+      expect(subject().three).toEqual(3);
     });
 
     it('calls the creator function only once', () => {
-      subject.three;
-      subject.three;
+      subject().three;
+      subject().three;
       expect(creator).toHaveBeenCalledTimes(1);
     });
+  });
+
+  describe('when getting a method', () => {
+    it('returns a function', () => {
+      expect(subject.methodReturning3times5).toBeInstanceOf(Function)
+    });
+
+    it('returns a different function', () => {
+      expect(subject.methodReturning3times5).not.toBe(implementation.methodReturning3times5)
+    });
+
+    it('does not call the creator function', () => {
+      subject.methodReturning3times5;
+      expect(creator).toHaveBeenCalledTimes(0);
+    });
+
+    describe('when calling method', () => {
+      it('calls the original method', () => {
+        expect(subject.methodReturning3times5()).toEqual(15);
+      });
+
+      it('calls the creator function once', () => {
+        subject.methodReturning3times5();
+        subject.methodReturning3times5();
+        expect(creator).toHaveBeenCalledTimes(1);
+      });
+    })
   });
 
   describe('when one lazy relies on another lazy value', () => {
