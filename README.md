@@ -3,11 +3,13 @@
 Shorter and more readable tests in jest. Combines TypeScript and `Proxy`.
 
 ```tsx
-import { render, fireEvent } from '@testing-library/react';
+import { lazy, freshFn, vary } from 'jest-zest';
+import { render } from '@testing-library/react';
+import user from '@testing-library/user-event';
 
 const userKind = vary('normal');
-const [onAddComment, onEditPost] = fresh(jest.fn, mock => mock.mockClear());
-const subject = lazy(() =>
+const [onAddComment, onEditPost] = freshFn;
+const { getByRole, queryByRole } = lazy(() =>
   render(
     <Page
       userKind={userKind()}
@@ -18,18 +20,16 @@ const subject = lazy(() =>
 );
 
 it('shows add comment button', () => {
-  expect(
-    subject.getByRole('button', { name: 'Add comment' })
-  ).toBeInTheDocument();
+  expect(getByRole('button', { name: 'Add comment' })).toBeInTheDocument();
 });
 
 it('hides edit post button', () => {
-  expect(subject.queryByRole('button', { name: 'Edit post' })).toBeNull();
+  expect(queryByRole('button', { name: 'Edit post' })).toBeNull();
 });
 
 describe('when add comment is clicked', () => {
   beforeEach(() => {
-    fireEvent.click(subject.getByRole('button', { name: 'Add comment' }));
+    user.click(getByRole('button', { name: 'Add comment' }));
   });
 
   it('calls onAddComment', () => {
@@ -38,17 +38,15 @@ describe('when add comment is clicked', () => {
 });
 
 describe('when user is admin', () => {
-  userKind('admin');
+  new userKind('admin');
 
   it('shows edit post button', () => {
-    expect(
-      subject.getByRole('button', { name: 'Edit post' })
-    ).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Edit post' })).toBeInTheDocument();
   });
 
   describe('when edit post is clicked', () => {
     beforeEach(() => {
-      fireEvent.click(getByRole('button', { name: 'Edit post' }));
+      user.click(getByRole('button', { name: 'Edit post' }));
     });
 
     it('calls onEditPost', () => {
