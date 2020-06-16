@@ -5,8 +5,8 @@ export function lazy<T>(
   let current: T | undefined;
 
   afterEach(() => {
-    if (cleanup) {
-      cleanup(current!);
+    if (cleanup && current != null) {
+      cleanup(current);
     }
     current = undefined;
   });
