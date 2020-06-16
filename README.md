@@ -18,16 +18,18 @@ const subject = lazy(() =>
 );
 
 it('shows add comment button', () => {
-  expect(subject.getByText('Add comment')).toBeInTheDocument();
+  expect(
+    subject.getByRole('button', { name: 'Add comment' })
+  ).toBeInTheDocument();
 });
 
 it('hides edit post button', () => {
-  expect(subject.queryByText('Edit post')).toBeNull();
+  expect(subject.queryByRole('button', { name: 'Edit post' })).toBeNull();
 });
 
 describe('when add comment is clicked', () => {
   beforeEach(() => {
-    fireEvent.click(subject.getByText('Add comment'));
+    fireEvent.click(subject.getByRole('button', { name: 'Add comment' }));
   });
 
   it('calls onAddComment', () => {
@@ -39,12 +41,14 @@ describe('when user is admin', () => {
   userKind('admin');
 
   it('shows edit post button', () => {
-    expect(subject.getByText('Edit post')).toBeInTheDocument();
+    expect(
+      subject.getByRole('button', { name: 'Edit post' })
+    ).toBeInTheDocument();
   });
 
   describe('when edit post is clicked', () => {
     beforeEach(() => {
-      fireEvent.click(subject.getByText('Edit post'));
+      fireEvent.click(getByRole('button', { name: 'Edit post' }));
     });
 
     it('calls onEditPost', () => {
@@ -58,18 +62,18 @@ describe('when user is admin', () => {
 
 ### `lazy(creator: () => T, cleanup?: (object?: T) => void)`
 
-Pass a creator function that will be lazily called once. Cleared for each test using `afterEach()`.
+Pass a creator function that will be called lazily yet only once. Run `cleanup` callback for each test via `afterEach()`.
 
 Before:
 
 ```tsx
-import { render, getRoles } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import user from '@testing-library/user-event';
 
 const subject = () => render(<CreatePostForm />);
 
 it('shows a form', () => {
-  const { getAllByRole } = subject();
-  expect(getAllByRole('form')).toHaveLength(1);
+  expect(subject().getAllByRole('form')).toHaveLength(1);
 });
 
 it('shows content input', () => {
@@ -78,25 +82,22 @@ it('shows content input', () => {
 });
 
 it('shows post button', () => {
-  const { getAllByRole, getByText } = subject();
-  expect(getAllByRole('button')).toContain(getByText('Post'));
+  expect(subject().getByRole('button', { name: 'Post' })).toBeInTheDocument();
 });
 
 it('disables post button', () => {
-  expect(subject().getByText('Post')).toBeDisabled();
+  expect(subject().getByRole('button', { name: 'Post' })).toBeDisabled();
 });
 
-describe('when content is added', () => {
+describe('when user types content', () => {
   let result: typeof ReturnType<subject>;
   beforeEach(() => {
     result = subject();
-    fireEvent.change(result.getByLabelText('Content'), {
-      target: { value: 'New content' },
-    });
+    return user.type(result.getByLabelText('Content'), 'New content');
   });
 
   it('enables the post button', () => {
-    expect(result.getByText('Post')).toBeEnabled();
+    expect(result.getByRole('button', { name: 'Post' })).toBeEnabled();
   });
 });
 ```
@@ -104,22 +105,23 @@ describe('when content is added', () => {
 After:
 
 ```tsx
-import { render, getRoles } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
-const subject = lazy(() => render(<CreatePostForm />));
-const roles = lazy(() => getRoles(subject.container));
-const postButton = lazy(() => subject.getByText('Post'));
+const { getByRole, getAllByRole, getByLabelText } = lazy(() =>
+  render(<CreatePostForm />)
+);
+const postButton = lazy(() => getByRole('button', { name: 'Post' }));
 
 it('shows a form', () => {
-  expect(roles.form).toHaveLength(1);
+  expect(getAllByRole('form')).toHaveLength(1);
 });
 
 it('shows content input', () => {
-  expect(roles.textbox).toContain(subject.getByLabelText('Content'));
+  expect(getAllByRole('textbox')).toContain(getByLabelText('Content'));
 });
 
 it('shows post button', () => {
-  expect(roles.button).toContain(postButton());
+  expect(postButton()).toBeInTheDocument();
 });
 
 it('disables post button', () => {
@@ -127,11 +129,7 @@ it('disables post button', () => {
 });
 
 describe('when content is added', () => {
-  beforeEach(() => {
-    fireEvent.change(subject.getByLabelText('Content'), {
-      target: { value: 'New content' },
-    });
-  });
+  beforeEach(() => user.type(getByLabelText('Content'), 'New content'));
 
   it('enables the post button', () => {
     expect(postButton()).toBeDisabled();
@@ -144,6 +142,7 @@ describe('when content is added', () => {
 Create multiple of something that must be cleared for each test. Great for spies like `jest.fn()`.
 
 It accepts two arguments:
+
 1. Pass a function that will be called initially to create your object
 2. A function that clears the object using `afterEach()`
 
@@ -169,6 +168,8 @@ afterEach(() => {
 After:
 
 ```ts
+import { fresh } from 'jest-zest';
+
 const [onChange, onFocus, onBlur] = fresh(jest.fn, mock => mock.mockClear());
 ```
 
@@ -195,7 +196,31 @@ const props = {
 After:
 
 ```ts
+import { fresh } from 'jest-zest';
+
 const freshFn = fresh(jest.fn, mock => mock.mockClear());
+
+const props = {
+  onChange: freshFn(),
+  onFocus: freshFn(),
+  onBlur: freshFn(),
+};
+```
+
+### `freshFn`
+
+After:
+
+```ts
+import { freshFn } from 'jest-zest';
+
+const [onChange, onFocus, onBlur] = freshFn;
+```
+
+After:
+
+```ts
+import { freshFn } from 'jest-zest';
 
 const props = {
   onChange: freshFn(),

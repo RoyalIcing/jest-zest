@@ -5,7 +5,9 @@ export function lazy<T>(
   let current: T | undefined;
 
   afterEach(() => {
-    cleanup ? cleanup(current!) : undefined;
+    if (cleanup) {
+      cleanup(current!);
+    }
     current = undefined;
   });
 
@@ -27,14 +29,13 @@ export function lazy<T>(
           if (!current) {
             current = creator();
           }
-    
-          const method = current[prop]
+
+          const method = current[prop];
           if (method instanceof Function) {
             return method.apply(current, argumentsList);
           }
-        }
+        },
       });
-
     },
   }) as T & (() => T);
 }
@@ -97,3 +98,5 @@ export function fresh<T>(
     },
   }) as Array<T> & (() => T);
 }
+
+export const freshFn = fresh(jest.fn, mock => mock.mockClear());

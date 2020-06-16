@@ -1,12 +1,13 @@
-import { lazy, vary, fresh } from './index';
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { lazy, vary, fresh, freshFn } from './index';
 
 describe('lazy', () => {
   const implementation = {
     three: 3,
     methodReturning3times5() {
-      return 5 * this.three
-    }
-  }
+      return 5 * this.three;
+    },
+  };
   const creator = jest.fn().mockReturnValue(implementation);
   const cleanupCallback = jest.fn();
   beforeEach(() => {
@@ -49,11 +50,13 @@ describe('lazy', () => {
 
   describe('when getting a method', () => {
     it('returns a function', () => {
-      expect(subject.methodReturning3times5).toBeInstanceOf(Function)
+      expect(subject.methodReturning3times5).toBeInstanceOf(Function);
     });
 
     it('returns a different function', () => {
-      expect(subject.methodReturning3times5).not.toBe(implementation.methodReturning3times5)
+      expect(subject.methodReturning3times5).not.toBe(
+        implementation.methodReturning3times5
+      );
     });
 
     it('does not call the creator function', () => {
@@ -71,7 +74,7 @@ describe('lazy', () => {
         subject.methodReturning3times5();
         expect(creator).toHaveBeenCalledTimes(1);
       });
-    })
+    });
   });
 
   describe('when one lazy relies on another lazy value', () => {
@@ -146,6 +149,35 @@ describe('fresh()', () => {
 
   describe('when calling result', () => {
     const result = objects();
+
+    it('is mock', () => {
+      expect(jest.isMockFunction(result)).toBe(true);
+    });
+  });
+});
+
+describe('freshFn()', () => {
+  it('has infinite length', () => {
+    expect(freshFn.length).toEqual(Infinity);
+  });
+
+  const [a, b, c] = freshFn;
+  it.each([a, b, c])('object is mock', object => {
+    expect(jest.isMockFunction(object)).toBe(true);
+  });
+
+  describe('when calling a', () => {
+    beforeEach(() => {
+      a('argument');
+    });
+
+    it('has not called b', () => {
+      expect(b).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe('when calling freshFn', () => {
+    const result = freshFn();
 
     it('is mock', () => {
       expect(jest.isMockFunction(result)).toBe(true);
