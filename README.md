@@ -40,7 +40,7 @@ describe('when add comment is clicked', () => {
 
 describe('when user is admin', () => {
   new userKind('admin');
-  // OR
+  // OR? provide feedback is this is more natural:
   // userKind.current = 'admin';
 
   it('shows edit post button', () => {
@@ -74,6 +74,8 @@ userKind.each(['admin', 'editor'])('when user is %s', () => {
   });
 });
 ```
+
+----
 
 ## Documentation
 
@@ -154,6 +156,8 @@ describe('when content is added', () => {
 });
 ```
 
+----
+
 ### `fresh(creator: () => T, refresher: (object: T) => void)`
 
 Create multiple of something that must be cleared for each test. Great for spies like `jest.fn()`.
@@ -190,6 +194,10 @@ import { fresh } from 'jest-zest';
 const [onChange, onFocus, onBlur] = fresh(jest.fn, mock => mock.mockClear());
 ```
 
+----
+
+### `freshFn`
+
 Before:
 
 ```ts
@@ -213,9 +221,7 @@ const props = {
 After:
 
 ```ts
-import { fresh } from 'jest-zest';
-
-const freshFn = fresh(jest.fn, mock => mock.mockClear());
+import { freshFn } from 'jest-zest';
 
 const props = {
   onChange: freshFn(),
@@ -224,31 +230,24 @@ const props = {
 };
 ```
 
-### `freshFn`
-
-After:
+Or After:
 
 ```ts
 import { freshFn } from 'jest-zest';
 
 const [onChange, onFocus, onBlur] = freshFn;
-```
-
-After:
-
-```ts
-import { freshFn } from 'jest-zest';
-
 const props = {
-  onChange: freshFn(),
-  onFocus: freshFn(),
-  onBlur: freshFn(),
+  onChange,
+  onFocus,
+  onBlur,
 };
 ```
 
+----
+
 ### `vary()`
 
-Define and redefine a value easily.
+Define and redefine a value shared between tests easily.
 
 Before:
 
@@ -283,46 +282,22 @@ describe('when variation is blue', () => {
 After:
 
 ```tsx
-const kind = vary('');
-const subject = lazy(() => render(<Component kind={kind()} />));
+const color = vary('');
+const subject = lazy(() => render(<Component color={color()} />));
 
-describe('when variation is orange', () => {
-  new kind('orange');
+describe('when color is orange', () => {
+  new color('orange');
 
   it('shows text orange', () => {
     expect(subject.getByText('orange')).toBeInTheDocument();
   });
 });
 
-describe('when variation is blue', () => {
-  new kind('blue');
+describe('when color is blue', () => {
+  new color('blue');
 
   it('shows text blue', () => {
     expect(subject.getByText('blue')).toBeInTheDocument();
   });
 });
 ```
-
----
-
-This project was bootstrapped with [TSDX](https://github.com/jaredpalmer/tsdx).
-
-## Local Development
-
-Below is a list of commands you will probably find useful.
-
-### `npm start` or `yarn start`
-
-Runs the project in development/watch mode. Your project will be rebuilt upon changes. TSDX has a special logger for you convenience. Error messages are pretty printed and formatted for compatibility VS Code's Problems tab.
-
-Your library will be rebuilt if you make edits.
-
-### `npm run build` or `yarn build`
-
-Bundles the package to the `dist` folder.
-The package is optimized and bundled with Rollup into multiple formats (CommonJS, UMD, and ES Module).
-
-### `npm test` or `yarn test`
-
-Runs the test watcher (Jest) in an interactive mode.
-By default, runs tests related to files changed since the last commit.
