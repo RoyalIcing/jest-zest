@@ -45,6 +45,7 @@ export function vary<T>(
   initialValue: T
 ): (() => T) & {
   new (newValue: T): void;
+  each(variations: ReadonlyArray<T>): ReturnType<typeof describe.each>;
 } {
   let currentValue = initialValue;
 
@@ -52,7 +53,21 @@ export function vary<T>(
     currentValue = initialValue;
   });
 
-  return new Proxy(Object, {
+  class Base {
+    static each(variations: ReadonlyArray<T>): (name: string, fn: () => unknown, timeout?: number) => void {
+      return (name, fn, timeout) => {
+        describe.each(variations)(name, (variation) => {
+          beforeEach(() => {
+            currentValue = variation;
+          });
+
+          fn()
+        }, timeout)
+      }
+    }
+  }
+
+  return new Proxy(Base, {
     apply() {
       return currentValue;
     },
@@ -64,6 +79,7 @@ export function vary<T>(
     },
   }) as (() => T) & {
     new (newValue: T): void;
+    each(variations: ReadonlyArray<T>): ReturnType<typeof describe.each>;
   };
 }
 

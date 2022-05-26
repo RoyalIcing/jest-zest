@@ -20,7 +20,7 @@ describe('lazy()', () => {
     it('has not called cleanup callback', () => {
       expect(cleanupCallback).toHaveBeenCalledTimes(0);
     });
-  })
+  });
 
   describe('using result', () => {
     const subject = lazy(creator, cleanupCallback);
@@ -127,6 +127,24 @@ describe('vary()', () => {
 
     it('is still 5', () => {
       expect(subject()).toEqual(5);
+    });
+
+    describe('.each', () => {
+      let values: Set<number> = new Set();
+      beforeAll(() => {
+        values = new Set();
+      });
+      afterAll(() => {
+        expect(Array.from(values).sort()).toEqual([1, 2, 3]);
+      });
+
+      subject.each([1, 2, 3])('when value is %s', () => {
+        it('has provided value', () => {
+          const value = subject();
+          expect(value).not.toEqual(5);
+          values.add(value);
+        });
+      });
     });
   });
 });
