@@ -3,6 +3,13 @@ export function lazy<T>(
   cleanup?: (object: T) => void
 ): T & (() => T) {
   let current: T | undefined;
+  function doCreate() {
+    if (!current) {
+      current = creator();
+    }
+
+    return current;
+  }
 
   afterEach(() => {
     if (cleanup && current != null) {
@@ -13,24 +20,18 @@ export function lazy<T>(
 
   return new Proxy(() => {}, {
     apply() {
-      if (!current) {
-        current = creator();
-      }
-
-      return current;
+      return doCreate();
     },
-    get(_obj: {}, prop: keyof T) {
+    get(_obj: {}, prop) {
       if (prop === 'calls') {
         return;
       }
 
       return new Proxy(() => {}, {
         apply(_target, _thisArg, argumentsList) {
-          if (!current) {
-            current = creator();
-          }
+          const receiver = doCreate();
 
-          const method = current[prop];
+          const method = (receiver as any)[prop];
           if (method instanceof Function) {
             return method.apply(current, argumentsList);
           }
