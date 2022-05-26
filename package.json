@@ -28,6 +28,7 @@
   "scripts": {
     "prepack": "jest && npm run build",
     "dev": "parcel watch",
+    "tsc": "tsc --noEmit",
     "build": "parcel build",
     "test": "jest --watch"
   },
