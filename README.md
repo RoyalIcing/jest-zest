@@ -8,8 +8,10 @@ import { render } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
-const [onAddComment, onEditPost] = freshFn; // Runs mock.mockClear() after every test.
-const userKind = vary('normal'); // Can be set to a different value within describes.
+// `freshFn` creates many jest.fn() that are mock.mockClear() after every test.
+const [onAddComment, onEditPost] = freshFn;
+// Can be set to a different value within describes.
+const userKind = vary('normal');
 const { getByRole, queryByRole } = lazy(() =>
   render(
     <Page
@@ -156,6 +158,55 @@ describe('when content is added', () => {
 
 ----
 
+### `freshFn`
+
+Can be called or destructured to create a new `jest.fn()` that is clearer with `mockClear()` after each test run.
+
+Before:
+
+```ts
+const onChange = jest.fn();
+const onFocus = jest.fn();
+const onBlur = jest.fn();
+
+afterEach(() => {
+  onChange.mockClear();
+  onFocus.mockClear();
+  onBlur.mockClear();
+});
+
+const props = {
+  onChange,
+  onFocus,
+  onBlur,
+};
+```
+
+After by calling:
+
+```ts
+import { freshFn } from 'jest-zest';
+
+const props = {
+  onChange: freshFn(),
+  onFocus: freshFn(),
+  onBlur: freshFn(),
+};
+```
+
+After by destructuring:
+
+```ts
+import { freshFn } from 'jest-zest';
+
+const [onChange, onFocus, onBlur] = freshFn;
+const props = {
+  onChange,
+  onFocus,
+  onBlur,
+};
+```
+
 ### `fresh(creator: () => T, refresher: (object: T) => void)`
 
 Create multiple of something that must be cleared for each test. Great for spies like `jest.fn()`.
@@ -190,55 +241,6 @@ After:
 import { fresh } from 'jest-zest';
 
 const [onChange, onFocus, onBlur] = fresh(jest.fn, mock => mock.mockClear());
-```
-
-----
-
-### `freshFn`
-
-Before:
-
-```ts
-const onChange = jest.fn();
-const onFocus = jest.fn();
-const onBlur = jest.fn();
-
-afterEach(() => {
-  onChange.mockClear();
-  onFocus.mockClear();
-  onBlur.mockClear();
-});
-
-const props = {
-  onChange,
-  onFocus,
-  onBlur,
-};
-```
-
-After:
-
-```ts
-import { freshFn } from 'jest-zest';
-
-const props = {
-  onChange: freshFn(),
-  onFocus: freshFn(),
-  onBlur: freshFn(),
-};
-```
-
-Or After:
-
-```ts
-import { freshFn } from 'jest-zest';
-
-const [onChange, onFocus, onBlur] = freshFn;
-const props = {
-  onChange,
-  onFocus,
-  onBlur,
-};
 ```
 
 ----
