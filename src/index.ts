@@ -52,7 +52,7 @@ export function vary<T>(
     currentValue = initialValue;
   });
 
-  return new Proxy(() => {}, {
+  return new Proxy(Object, {
     apply() {
       return currentValue;
     },

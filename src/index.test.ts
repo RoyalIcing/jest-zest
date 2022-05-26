@@ -102,29 +102,28 @@ describe('vary()', () => {
     const subject = vary(5);
 
     it('is 5', () => {
-      // console.log(subject, new (subject as any)())
       expect(subject()).toEqual(5);
     });
 
-    // describe.skip('override with 9', () => {
-    //   new subject(9);
+    describe('override with 9', () => {
+      new subject(9);
 
-    //   it('is 9', () => {
-    //     expect(subject()).toEqual(9);
-    //   });
+      it('is 9', () => {
+        expect(subject()).toEqual(9);
+      });
 
-    //   describe('override with 12', () => {
-    //     new subject(12);
+      describe('override with 12', () => {
+        new subject(12);
 
-    //     it('is 12', () => {
-    //       expect(subject()).toEqual(12);
-    //     });
-    //   });
+        it('is 12', () => {
+          expect(subject()).toEqual(12);
+        });
+      });
 
-    //   it('is still 9', () => {
-    //     expect(subject()).toEqual(9);
-    //   });
-    // });
+      it('is still 9', () => {
+        expect(subject()).toEqual(9);
+      });
+    });
 
     it('is still 5', () => {
       expect(subject()).toEqual(5);
@@ -140,7 +139,7 @@ describe('fresh()', () => {
   });
 
   const [a, b, c] = objects;
-  it.each([a, b, c])('object is mock', object => {
+  it.each([a, b, c])('object is valid mock', object => {
     expect(jest.isMockFunction(object)).toBe(true);
   });
 
@@ -157,7 +156,7 @@ describe('fresh()', () => {
   describe('when calling result', () => {
     const result = objects();
 
-    it('is mock', () => {
+    it('is valid mock', () => {
       expect(jest.isMockFunction(result)).toBe(true);
     });
   });
