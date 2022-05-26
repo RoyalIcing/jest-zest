@@ -40,8 +40,6 @@ describe('when add comment is clicked', () => {
 
 describe('when user is admin', () => {
   new userKind('admin');
-  // OR? provide feedback is this is more natural:
-  // userKind.current = 'admin';
 
   it('shows edit post button', () => {
     expect(getByRole('button', { name: 'Edit post' })).toBeVisible();
