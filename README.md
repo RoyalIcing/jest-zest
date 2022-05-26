@@ -7,12 +7,12 @@ import { lazy, freshFn, vary } from 'jest-zest';
 import { render } from '@testing-library/react';
 import user from '@testing-library/user-event';
 
-const userKind = vary('normal');
 const [onAddComment, onEditPost] = freshFn;
+const userKind = vary('normal');
 const { getByRole, queryByRole } = lazy(() =>
   render(
     <Page
-      userKind={userKind()}
+      userKind={new userKind()}
       onAddComment={onAddComment}
       onEditPost={onEditPost}
     />
@@ -37,9 +37,39 @@ describe('when add comment is clicked', () => {
   });
 });
 
-describe('when user is admin', () => {
-  new userKind('admin');
+// userKind.when`user is ${'admin'}`(() => {
 
+// })
+
+// userKind`when user is ${'admin'}`, () => {
+// vary`when ${userKind} is ${'admin'}`, () => {
+describe('when user is admin', () => {
+  // userKind('admin');
+  // userKind.set('admin');
+  // userKind.assign('admin');
+  vary(userKind)('admin');
+  // describe(userKind`when user is ${'admin'}`, () => {
+  // userKind.is('admin');
+  // new userKind('admin');
+  // vary(userKind, 'admin');
+  // userKind.current = 'admin';
+
+  it('shows edit post button', () => {
+    expect(getByRole('button', { name: 'Edit post' })).toBeInTheDocument();
+  });
+
+  describe('when edit post is clicked', () => {
+    beforeEach(() => {
+      user.click(getByRole('button', { name: 'Edit post' }));
+    });
+
+    it('calls onEditPost', () => {
+      expect(onEditPost).toHaveBeenCalledTimes(1);
+    });
+  });
+});
+
+userKind.each(['admin', 'editor'])('when user is %s', () => {
   it('shows edit post button', () => {
     expect(getByRole('button', { name: 'Edit post' })).toBeInTheDocument();
   });

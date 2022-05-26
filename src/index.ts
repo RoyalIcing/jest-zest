@@ -70,6 +70,22 @@ export function fresh<T>(
   creator: () => T,
   refresher: (object: T) => void
 ): Array<T> & (() => T) {
+  function create() {
+    const object = creator();
+    afterEach(() => {
+      refresher(object);
+    });
+    return object;
+  }
+
+  const iterable = {
+    *[Symbol.iterator]() {
+      while (true) {
+        yield create();
+      }
+    },
+  };
+
   return new Proxy(() => {}, {
     get(_obj: {}, prop) {
       if (prop === 'length') {
@@ -87,14 +103,10 @@ export function fresh<T>(
         }
       }
 
-      return undefined;
+      return (iterable as any)[prop];
     },
     apply() {
-      const object = creator();
-      afterEach(() => {
-        refresher(object);
-      });
-      return object;
+      return create();
     },
   }) as Array<T> & (() => T);
 }
