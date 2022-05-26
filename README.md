@@ -6,13 +6,14 @@ Shorter and more readable tests in jest. Combines TypeScript and `Proxy`.
 import { lazy, freshFn, vary } from 'jest-zest';
 import { render } from '@testing-library/react';
 import user from '@testing-library/user-event';
+import '@testing-library/jest-dom';
 
-const [onAddComment, onEditPost] = freshFn;
-const userKind = vary('normal');
+const [onAddComment, onEditPost] = freshFn; // Runs mock.mockClear() after every test.
+const userKind = vary('normal'); // Can be set to a different value within describes.
 const { getByRole, queryByRole } = lazy(() =>
   render(
     <Page
-      userKind={new userKind()}
+      userKind={userKind()}
       onAddComment={onAddComment}
       onEditPost={onEditPost}
     />
@@ -20,7 +21,7 @@ const { getByRole, queryByRole } = lazy(() =>
 );
 
 it('shows add comment button', () => {
-  expect(getByRole('button', { name: 'Add comment' })).toBeInTheDocument();
+  expect(getByRole('button', { name: 'Add comment' })).toBeVisible();
 });
 
 it('hides edit post button', () => {
@@ -37,25 +38,13 @@ describe('when add comment is clicked', () => {
   });
 });
 
-// userKind.when`user is ${'admin'}`(() => {
-
-// })
-
-// userKind`when user is ${'admin'}`, () => {
-// vary`when ${userKind} is ${'admin'}`, () => {
 describe('when user is admin', () => {
-  // userKind('admin');
-  // userKind.set('admin');
-  // userKind.assign('admin');
-  vary(userKind)('admin');
-  // describe(userKind`when user is ${'admin'}`, () => {
-  // userKind.is('admin');
-  // new userKind('admin');
-  // vary(userKind, 'admin');
+  new userKind('admin');
+  // OR
   // userKind.current = 'admin';
 
   it('shows edit post button', () => {
-    expect(getByRole('button', { name: 'Edit post' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Edit post' })).toBeVisible();
   });
 
   describe('when edit post is clicked', () => {
