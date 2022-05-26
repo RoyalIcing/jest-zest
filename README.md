@@ -10,8 +10,10 @@ import '@testing-library/jest-dom';
 
 // `freshFn` creates many jest.fn() that are mock.mockClear() after every test.
 const [onAddComment, onEditPost] = freshFn;
-// Can be set to a different value within describes.
+// `vary` lets you redefine a value with nested describes, useful for given-when-then tests.
 const userKind = vary('normal');
+// `lazy` uses Proxy to lazily perform render() whose result is cached within each test run.
+// We destructure `getByRole` and `queryByRole` which also Proxy to the underlying method.
 const { getByRole, queryByRole } = lazy(() =>
   render(
     <Page
