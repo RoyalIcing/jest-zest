@@ -41,11 +41,12 @@ export function lazy<T>(
   }) as T & (() => T);
 }
 
-export function vary<T>(initialValue: T): (() => T) &
-  ((newValue: T) => void) & {
-    new (newValue: T): void;
-    each(variations: ReadonlyArray<T>): ReturnType<typeof describe.each>;
-  } {
+export function vary<T>(initialValue: T): {
+  (): T;
+  (newValue: T): void;
+  new (newValue: T): void;
+  each(variations: ReadonlyArray<T>): ReturnType<typeof describe.each>;
+} {
   let currentValue = initialValue;
 
   beforeEach(() => {
@@ -94,11 +95,12 @@ export function vary<T>(initialValue: T): (() => T) &
       });
       return {};
     },
-  }) as unknown as (() => T) &
-    ((newValue: T) => void) & {
-      new (newValue: T): void;
-      each(variations: ReadonlyArray<T>): ReturnType<typeof describe.each>;
-    };
+  }) as unknown as {
+    (): T;
+    (newValue: T): void;
+    new (newValue: T): void;
+    each(variations: ReadonlyArray<T>): ReturnType<typeof describe.each>;
+  };
 }
 
 export function fresh<T>(
