@@ -41,9 +41,7 @@ export function lazy<T>(
   }) as T & (() => T);
 }
 
-export function vary<T>(
-  initialValue: T
-): (() => T) & {
+export function vary<T>(initialValue: T): (() => T) & {
   new (newValue: T): void;
   each(variations: ReadonlyArray<T>): ReturnType<typeof describe.each>;
 } {
@@ -54,16 +52,22 @@ export function vary<T>(
   });
 
   class Base {
-    static each(variations: ReadonlyArray<T>): (name: string, fn: () => unknown, timeout?: number) => void {
+    static each(
+      variations: ReadonlyArray<T>
+    ): (name: string, fn: () => unknown, timeout?: number) => void {
       return (name, fn, timeout) => {
-        describe.each(variations)(name, (variation) => {
-          beforeEach(() => {
-            currentValue = variation;
-          });
+        describe.each(variations)(
+          name,
+          (variation) => {
+            beforeEach(() => {
+              currentValue = variation;
+            });
 
-          fn()
-        }, timeout)
-      }
+            fn();
+          },
+          timeout
+        );
+      };
     }
   }
 
@@ -128,4 +132,4 @@ export function fresh<T>(
   }) as Array<T> & (() => T);
 }
 
-export const freshFn = fresh(jest.fn, mock => mock.mockClear());
+export const freshFn = fresh(jest.fn, (mock) => mock.mockClear());

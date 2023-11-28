@@ -150,14 +150,14 @@ describe('vary()', () => {
 });
 
 describe('fresh()', () => {
-  const objects = fresh(jest.fn, mock => mock.mockClear());
+  const objects = fresh(jest.fn, (mock) => mock.mockClear());
 
   it('has infinite length', () => {
     expect(objects.length).toEqual(Infinity);
   });
 
   const [a, b, c] = objects;
-  it.each([a, b, c])('object is valid mock', object => {
+  it.each([a, b, c])('object is valid mock', (object) => {
     expect(jest.isMockFunction(object)).toBe(true);
   });
 
@@ -186,7 +186,7 @@ describe('freshFn()', () => {
   });
 
   const [a, b, c] = freshFn;
-  it.each([a, b, c])('object is mock', object => {
+  it.each([a, b, c])('object is mock', (object) => {
     expect(jest.isMockFunction(object)).toBe(true);
   });
 
