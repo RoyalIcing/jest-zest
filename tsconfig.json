@@ -4,6 +4,7 @@
     "module": "ESNext",
     "target": "ESNext",
     "lib": ["dom", "esnext"],
+    "types": ["node", "jest"],
     "importHelpers": true,
     "declaration": true,
     "sourceMap": true,
