@@ -41,10 +41,11 @@ export function lazy<T>(
   }) as T & (() => T);
 }
 
-export function vary<T>(initialValue: T): (() => T) & {
-  new (newValue: T): void;
-  each(variations: ReadonlyArray<T>): ReturnType<typeof describe.each>;
-} {
+export function vary<T>(initialValue: T): (() => T) &
+  ((newValue: T) => void) & {
+    new (newValue: T): void;
+    each(variations: ReadonlyArray<T>): ReturnType<typeof describe.each>;
+  } {
   let currentValue = initialValue;
 
   beforeEach(() => {
@@ -72,8 +73,20 @@ export function vary<T>(initialValue: T): (() => T) & {
   }
 
   return new Proxy(Base, {
-    apply() {
-      return currentValue;
+    apply(_target, _this, args) {
+      if (args.length === 0) {
+        return currentValue;
+      } else if (args.length === 1) {
+        beforeEach(() => {
+          currentValue = args[0] as typeof currentValue;
+        });
+        return;
+      } else {
+        console.error(args);
+        throw Error(
+          `Can only call with 0 or 1 args not ${args.length} ${args}.`
+        );
+      }
     },
     construct(_target: {}, [newValue]) {
       beforeEach(() => {
@@ -81,10 +94,11 @@ export function vary<T>(initialValue: T): (() => T) & {
       });
       return {};
     },
-  }) as (() => T) & {
-    new (newValue: T): void;
-    each(variations: ReadonlyArray<T>): ReturnType<typeof describe.each>;
-  };
+  }) as unknown as (() => T) &
+    ((newValue: T) => void) & {
+      new (newValue: T): void;
+      each(variations: ReadonlyArray<T>): ReturnType<typeof describe.each>;
+    };
 }
 
 export function fresh<T>(

@@ -105,28 +105,64 @@ describe('vary()', () => {
       expect(subject()).toEqual(5);
     });
 
-    describe('override with 9', () => {
-      new subject(9);
+    describe('new', () => {
+      describe('override with 9', () => {
+        new subject(9);
 
-      it('is 9', () => {
-        expect(subject()).toEqual(9);
-      });
+        it('is 9', () => {
+          expect(subject()).toEqual(9);
+        });
 
-      describe('override with 12', () => {
-        new subject(12);
+        describe('override with 12', () => {
+          new subject(12);
 
-        it('is 12', () => {
-          expect(subject()).toEqual(12);
+          it('is 12', () => {
+            expect(subject()).toEqual(12);
+          });
+        });
+
+        it('is still 9', () => {
+          expect(subject()).toEqual(9);
         });
       });
 
-      it('is still 9', () => {
-        expect(subject()).toEqual(9);
+      it('is still 5', () => {
+        expect(subject()).toEqual(5);
       });
     });
 
-    it('is still 5', () => {
-      expect(subject()).toEqual(5);
+    describe('vary/2', () => {
+      describe('override with 9', () => {
+        subject(9);
+
+        it('is 9', () => {
+          expect(subject()).toEqual(9);
+        });
+
+        describe('override with 12', () => {
+          subject(12);
+
+          it('is 12', () => {
+            expect(subject()).toEqual(12);
+          });
+        });
+
+        describe('override with undefined sets not gets', () => {
+          subject(undefined as any);
+
+          it('is undefined', () => {
+            expect(subject()).toBeUndefined();
+          });
+        });
+
+        it('is still 9', () => {
+          expect(subject()).toEqual(9);
+        });
+      });
+
+      it('is still 5', () => {
+        expect(subject()).toEqual(5);
+      });
     });
 
     describe('.each', () => {
