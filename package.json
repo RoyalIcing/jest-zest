@@ -5,23 +5,17 @@
   "author": "Patrick Smith",
   "source": "src/index.ts",
   "main": "dist/jest-zest.js",
-  "module": "dist/jest-zest.module.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
   "exports": {
     ".": {
-      "browser": "./dist/jest-zest.module.js",
-      "import": "./dist/jest-zest.module.js",
       "require": "./dist/jest-zest.js"
     }
   },
   "targets": {
     "main": {
-      "optimize": false
-    },
-    "module": {
       "optimize": false
     }
   },
