@@ -1,6 +1,6 @@
 {
   "name": "jest-zest",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "license": "MIT",
   "author": "Patrick Smith",
   "source": "src/index.ts",
