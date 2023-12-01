@@ -43,7 +43,7 @@ describe('when add comment is clicked', () => {
 });
 
 describe('when user is admin', () => {
-  new userKind('admin');
+  userKind('admin');
 
   it('shows edit post button', () => {
     expect(getByRole('button', { name: 'Edit post' })).toBeVisible();
@@ -247,7 +247,7 @@ const [onChange, onFocus, onBlur] = fresh(jest.fn, mock => mock.mockClear());
 
 ----
 
-### `vary()`
+### `vary<T>(initialValue: T)`
 
 Define and redefine a value shared between tests easily.
 
@@ -288,7 +288,7 @@ const color = vary('');
 const subject = lazy(() => render(<Component color={color()} />));
 
 describe('when color is orange', () => {
-  new color('orange');
+  color('orange');
 
   it('shows text orange', () => {
     expect(subject.getByText('orange')).toBeInTheDocument();
@@ -296,7 +296,7 @@ describe('when color is orange', () => {
 });
 
 describe('when color is blue', () => {
-  new color('blue');
+  color('blue');
 
   it('shows text blue', () => {
     expect(subject.getByText('blue')).toBeInTheDocument();
